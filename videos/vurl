@@ -1,0 +1,97 @@
+#!/usr/bin/env python2.6
+# vim: set fileencoding=utf-8 :
+
+"""
+vimeo.py
+
+A simple script to download videos from www.vimeo.com
+See below for copyright and license terms
+"""
+
+from __future__ import with_statement
+import os, sys, urllib
+from xml.etree import ElementTree
+import htmlentitydefs
+import re
+
+class VimeoURLOpener(urllib.FancyURLopener):
+    "Vimeo blocks the urllib user agent for some reason"
+    version = "Mozilla/4.0"
+
+urllib._urlopener = VimeoURLOpener()
+
+class DownloadDisplay(object):
+    def __init__(self):
+        self.dots = 0
+        print "/" + 38 * '- ' + "-\\"
+    def __call__(self, block_count, block_size, file_size):
+        if file_size < 1:
+            if self.dots == 0:
+                print "unable to determine filesize"
+                self.dots = 1
+        dots    = block_count * block_size * 79 / file_size
+        new     = dots - self.dots
+        self.dots = dots
+        sys.stdout.write(new * '=')
+        if block_count * block_size == file_size:
+            print "|"
+
+def getclip(id):
+    f = urllib.urlopen("http://vimeo.com/moogaloop/load/clip:%s" % id)
+    parser = ElementTree.XMLParser()
+    parser.entity = htmlentitydefs.entitydefs
+    root = ElementTree.parse(f, parser=parser)
+    f.close()
+
+    sig     = root.findtext('request_signature')
+    exp     = root.findtext('request_signature_expires')
+    caption = root.findtext('video/caption')
+    url     = "http://www.vimeo.com/moogaloop/play/clip:%s/%s/%s/?q=sd" % (id,sig,exp)
+
+    print url
+
+if __name__ == "__main__":
+    if len(sys.argv) == 2:
+        p = re.compile(r'http://.*vimeo.com/([0-9]+)')
+        m = p.match(sys.argv[1])
+        if m :
+                id = m.group(1)
+        else:
+              id = sys.argv[1]
+              
+        getclip(id)
+    else:
+        print "usage: %s <vimeo clip id>|<vimeo url>" % os.path.basename(sys.argv[0])
+
+
+""" " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " "
+Copyright 2010 Aryeh Leib Taurog
+http://www.aryehleib.com
+all rights reserved
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+*   Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
+
+*   Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+
+*   Neither Aryeh Leib Taurog's name nor the names of any other
+    contributors to this project may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+ " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " """
