@@ -1,10 +1,12 @@
-I do not even know MarkDown...
-Whatever this is.
+What is this?
+-------------
 
-This is just a small repository where I will share some scripts I create for my own purposes.
-Some will work, some will fail.
-Most of them are crappy code you would never ever feel like look (and even less reuse).
+I will use this GitHub repository to share small scripts of the kind you made for personal purposes,
+and probably you only use them once. But just in case somebody needs something similar of the simple
+code contained in it could be of any help.
 
-Who knows?
+What do we have so far?
+-----------------------
 
-Well, just for fun, and your benefit
+  - 'video/' some scripts to do tasks related to video
+  - 'last.fm/' just some simple Python scripts that perform queries to the last.fm API
