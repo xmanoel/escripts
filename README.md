@@ -10,3 +10,4 @@ What do we have so far?
 
   - 'video/' some scripts to do tasks related to video
   - 'last.fm/' just some simple Python scripts that perform queries to the last.fm API
+  - 'tumblr-importr/' again, Python scripts to insert posts into Tumblr (I used them when I migrated my blog that was stored somewhere else into Tumblr). 
